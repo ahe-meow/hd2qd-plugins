@@ -13,7 +13,7 @@
   },
   "HD2QD.License.dll": {
     "title": "会员授权",
-    "summary": "为仅供创作者会员使用的 MOD 登录创作者的网站，并自动续期授权。"
+    "summary": "为仅供创作者会员使用的 MOD 登录创作者的网站或输入激活码，并自动续期授权。"
   },
   "HD2QD.ResourceNames.dll": {
     "title": "资源名称",
