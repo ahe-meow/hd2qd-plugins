@@ -209,6 +209,11 @@
           "version": "0.13.1",
           "tag": "v0.13.1",
           "sha256": "c486732bfa6dd1e59a4b288630ec7b42d9dcc711e2e8732f2d539b65f30be7ce"
+        },
+        {
+          "version": "0.14.0",
+          "tag": "v0.14.0",
+          "sha256": "6b35bfe24e92adcc41466ac6bef72c252873fcd261a0c695313278f4f0590df5"
         }
       ]
     }
