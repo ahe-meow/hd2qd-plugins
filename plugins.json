@@ -93,7 +93,7 @@
     {
       "file": "HD2QD.License.dll",
       "title": "Member licenses",
-      "summary": "Signs in to a mod creator's site, or takes an activation code the creator gave you, for the mods that are available only to their members, and renews the license.",
+      "summary": "Signs in to a mod creator's site, or takes an activation code the creator gave you, for the mods that are available only to their members, renews the license, and confirms the membership once each game for the mods that ask.",
       "author": "pat-pat-patrick",
       "repository": "pat-pat-patrick/hd2-mod-license",
       "asset": "HD2QD.License.dll",
@@ -109,6 +109,11 @@
           "version": "1.4.0",
           "tag": "plugin-v1.4.0",
           "sha256": "be61f7ae2e97886d4dfaeeda036e2c794c7c7856d20cf7baabb6cbd5fb448fc0"
+        },
+        {
+          "version": "1.5.0",
+          "tag": "plugin-v1.5.0",
+          "sha256": "fd6b0902a20595a772c8a273574bfd7ff85ca3f20cdc87b0dd1c7146743eca40"
         }
       ]
     },
