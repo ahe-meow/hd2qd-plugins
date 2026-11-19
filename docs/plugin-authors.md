@@ -51,6 +51,7 @@ Every call gets the same dictionary.
 | Key | Type | Meaning |
 |---|---|---|
 | `api` | `long` | The contract's version. |
+| `version` | `string` | The manager's own version, such as `"0.22.0"` (from 0.22.0; absent before). |
 | `home` | `string` | The manager's settings folder. Keep the plugin's own files there. |
 | `appdata` | `string` | The player's roaming AppData (the game's `Arrowhead\Helldivers2`). |
 | `lang` | `string` | The language the manager shows, as a language tag (see [Languages](#languages)). The command line is `"en"`. |

@@ -49,6 +49,7 @@
 | 键 | 类型 | 含义 |
 |---|---|---|
 | `api` | `long` | 接口版本。 |
+| `version` | `string` | 管理器自身的版本号，例如 `"0.22.0"`（0.22.0 起提供，之前没有此键）。 |
 | `home` | `string` | 管理器的设置目录。插件自己的文件请保存在这里。 |
 | `appdata` | `string` | 玩家的 Roaming AppData（游戏的 `Arrowhead\Helldivers2` 位于其中）。 |
 | `lang` | `string` | 管理器当前显示的语言，为语言标记（见[语言](#语言)）。命令行为 `"en"`。 |
