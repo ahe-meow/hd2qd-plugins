@@ -183,7 +183,7 @@
     {
       "file": "HD2QD.HellForge.dll",
       "title": "HellForge",
-      "summary": "Launches HellForge, the offline Helldivers 2, and makes it a deploy target of Quick Deploy: the library's mods converted for HellForge's game version, sessions, a profile editor, settings, lobbies and logs. Deploying the library's mods requires Quick Deploy 0.20.0 or later.",
+      "summary": "Launches HellForge, the offline Helldivers 2, and makes it a deploy target of Quick Deploy: the library's mods converted for HellForge's game version, sessions, a profile editor, settings, lobbies, logs and licensed mods. Deploying the library's mods requires Quick Deploy 0.20.0 or later.",
       "author": "pat-pat-patrick",
       "repository": "pat-pat-patrick/hd2qd-hellforge",
       "asset": "HD2QD.HellForge.dll",
@@ -224,6 +224,11 @@
           "version": "0.14.0",
           "tag": "v0.14.0",
           "sha256": "6b35bfe24e92adcc41466ac6bef72c252873fcd261a0c695313278f4f0590df5"
+        },
+        {
+          "version": "0.15.0",
+          "tag": "v0.15.0",
+          "sha256": "a7f744ca32076ee34bd2279b503cf7c7d75b0d23f44718edf3cf7d3a65190b4e"
         }
       ]
     }
