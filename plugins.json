@@ -139,6 +139,11 @@
           "version": "1.11.3",
           "tag": "plugin-v1.11.3",
           "sha256": "651b981a2590b681e4431c9299a458fd1f4594c763eb3d926d10691d7e5d9d63"
+        },
+        {
+          "version": "1.11.4",
+          "tag": "plugin-v1.11.4",
+          "sha256": "46a2b79edd2e804f4c3f4a997ba65e2d8ef3c62f976a69f38551304e740c3c73"
         }
       ]
     },
