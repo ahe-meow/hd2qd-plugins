@@ -144,6 +144,11 @@
           "version": "1.11.4",
           "tag": "plugin-v1.11.4",
           "sha256": "46a2b79edd2e804f4c3f4a997ba65e2d8ef3c62f976a69f38551304e740c3c73"
+        },
+        {
+          "version": "1.11.5",
+          "tag": "plugin-v1.11.5",
+          "sha256": "c35b4c710ac1ae45213205ac89507b4b3f808b2368bdaf37aa14ad5e3e4ffc1d"
         }
       ]
     },
