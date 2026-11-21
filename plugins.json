@@ -131,9 +131,9 @@
           "sha256": "b0f4bf92486f970e8f80e01d0fb8a92ef846edac932c703bbcaed168f06284a4"
         },
         {
-          "version": "1.11.1",
-          "tag": "plugin-v1.11.1",
-          "sha256": "a572219bc641c779a09552970d6e6c90b1d9bcb95c49c1a6fc1318361c1aae7a"
+          "version": "1.11.2",
+          "tag": "plugin-v1.11.2",
+          "sha256": "a8347a9ee11db747ef20808fe9ad569f64affed5b0c3a99068f4e14df877fbbc"
         }
       ]
     },
