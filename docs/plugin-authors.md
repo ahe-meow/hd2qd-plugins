@@ -43,6 +43,9 @@ anything of the plugin runs, so `Api` must be a `const`.
 | `static readonly string[][] Commands` | Commands added to the command line, as rows of `[name, help]`. A name the manager has itself is left out. |
 | `int Run(string command, string[] args, TextWriter output, Dictionary<string, object> host)` | Runs one of `Commands`: `0` done, `1` refused, `2` a wrong command line. An exception is reported as a refusal. |
 | `bool Start(Dictionary<string, object> host)` | Runs once in the background when the window starts (a renewal, a cache). Return `true` when the manager should read its state again. |
+| `Dictionary<string, object> ModSource(string modFolder, Dictionary<string, object> host)` | For a protected mod (its `hd2_license.json` has `payload.deploy` `"game"`), where the manager deploys its files from: `{folder, mode}` when they are ready, `folder` laid out as the mod's own folder; `{folder: "", mode, why}` when they are not (`why` in `host["lang"]`, shown on the mod's row; the mod is left out of the deploy); `null` for a mod that is not the plugin's. Called once per mod whenever the manager reads its state, so it must be cheap. From Quick Deploy 0.23.0. |
+| `bool PrepareDeploy(Dictionary<string, object> host)` | Makes the protected mods' files ready, before a deploy and before the manager starts the game (on a background thread; it may take a while). `host["for_session"]` `true`: also the mods whose `payload.mode` is `"session"`. Return `false` when one could not be made ready. From Quick Deploy 0.23.0. |
+| `void EndSession(Dictionary<string, object> host)` | The game the manager started has ended and the manager has deployed without the session-mode mods: remove their files. Never called while the game runs. From Quick Deploy 0.23.0. |
 
 ## The host
 
@@ -58,6 +61,8 @@ Every call gets the same dictionary.
 | `data` | `string` | The game's `data` folder; `null` when no game folder is set. |
 | `mods` | `Func<List<Dictionary<string, object>>>` | The enabled mods in load order, each `{name, archives}`: the patch archives it deploys. The last mod to load wins a resource two mods ship. |
 | `library` | `Func<List<Dictionary<string, object>>>` | Every mod in the library, each `{name, path, enabled, settings}`; `settings` are the HD2 Mod Setting GUI lists its Lua writes. It may read archives: call it off the UI thread. |
+| `stage` | `string` | A folder on the game's drive (`<game>\hd2qd_stage`) where `ModSource` folders may live, so the manager deploys them by hard link; `null` when no game folder is set (from 0.23.0). |
+| `for_session` | `bool` | Only in `PrepareDeploy`: see above. |
 
 In the window only:
 

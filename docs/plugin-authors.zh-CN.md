@@ -41,6 +41,9 @@
 | `static readonly string[][] Commands` | 添加到命令行的命令，每行为 `[名称, 说明]`。与管理器自身命令重名的会被忽略。 |
 | `int Run(string command, string[] args, TextWriter output, Dictionary<string, object> host)` | 运行 `Commands` 中的命令：`0` 完成，`1` 拒绝，`2` 命令行有误。抛出的异常按拒绝处理。 |
 | `bool Start(Dictionary<string, object> host)` | 窗口启动时在后台运行一次（续期、缓存等）。需要管理器重新读取状态时返回 `true`。 |
+| `Dictionary<string, object> ModSource(string modFolder, Dictionary<string, object> host)` | 受保护的 MOD（其 `hd2_license.json` 中 `payload.deploy` 为 `"game"`）的文件从哪里部署：文件已就绪时返回 `{folder, mode}`，`folder` 的目录结构与该 MOD 自身的相同；未就绪时返回 `{folder: "", mode, why}`（`why` 使用 `host["lang"]` 的语言，显示在 MOD 行上；该 MOD 不参与部署）；不是本插件的 MOD 返回 `null`。管理器每次读取状态时对每个 MOD 调用一次，须保持开销很小。Quick Deploy 0.23.0 起。 |
+| `bool PrepareDeploy(Dictionary<string, object> host)` | 在部署前、以及管理器启动游戏前，准备好受保护 MOD 的文件（在后台线程调用，可以较慢）。`host["for_session"]` 为 `true` 时，`payload.mode` 为 `"session"` 的 MOD 也要准备。有 MOD 未能准备好时返回 `false`。Quick Deploy 0.23.0 起。 |
+| `void EndSession(Dictionary<string, object> host)` | 管理器启动的游戏已结束，管理器也已在不含会话模式 MOD 的情况下重新部署：删除这些 MOD 的文件。游戏运行期间不会调用。Quick Deploy 0.23.0 起。 |
 
 ## host
 
@@ -56,6 +59,8 @@
 | `data` | `string` | 游戏的 `data` 文件夹；未设置游戏目录时为 `null`。 |
 | `mods` | `Func<List<Dictionary<string, object>>>` | 按加载顺序排列的已启用 MOD，每项为 `{name, archives}`：该 MOD 部署的 patch 文件。两个 MOD 带有同一资源时，后加载者生效。 |
 | `library` | `Func<List<Dictionary<string, object>>>` | 库中所有 MOD，每项为 `{name, path, enabled, settings}`；`settings` 为其 Lua 写给 HD2 Mod Setting GUI 的设置列表名。可能需要读取 patch 文件，请在后台线程调用。 |
+| `stage` | `string` | 游戏所在盘上的一个文件夹（`<游戏目录>\hd2qd_stage`），`ModSource` 返回的文件夹可放在其中，管理器便能以硬链接部署；未设置游戏目录时为 `null`（0.23.0 起）。 |
+| `for_session` | `bool` | 仅 `PrepareDeploy` 中提供：见上文。 |
 
 仅窗口中提供：
 
