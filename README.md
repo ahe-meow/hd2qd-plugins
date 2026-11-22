@@ -17,7 +17,9 @@ built and released in its own repository, and [`plugins.json`](plugins.json) nam
 | HellForge: launches HellForge, the offline Helldivers 2, and makes it a deploy target of the manager: the library's mods converted for HellForge's game version, sessions, a profile editor, settings, lobbies, logs and licensed mods (deploying the library's mods needs manager 0.20.0 or later) | `HD2QD.HellForge.dll` | [0.15.0](https://github.com/pat-pat-patrick/hd2qd-hellforge/releases/tag/v0.15.0) | [hd2qd-hellforge](https://github.com/pat-pat-patrick/hd2qd-hellforge) |
 
 They need HD2 Mod Quick Deploy 0.15.0 or later (plugin Api 2). None is installed by default. The
-list holds the manager's author's plugins only; any other plugin can still be added from its file.
+list also takes plugins by other authors that meet the requirements in
+[Becoming an official plugin](#becoming-an-official-plugin); any plugin can still be added from its
+file.
 
 ## Adding a plugin
 
@@ -43,20 +45,71 @@ settings folder, so a plugin added here shows in every copy of the manager witho
 | `author`, `repository` | Who makes it, and the GitHub repository whose releases carry it. |
 | `asset` | The release asset to download. |
 | `api` | The contract version it speaks. |
+| `license` | The plugin's licence as an SPDX identifier (`MIT`, `Apache-2.0`, ...). For people reading the list; the manager does not use it. |
 | `wanted_by_file` | Optional: the manager marks the mods that ship this file as needing the plugin. |
 | `button` | Optional: `true` gives the plugin a button in the manager's title bar, drawn with its own `app.ico`. Only a plugin listed here, whose installed file matches one of its `versions`, can have one. |
 | `versions` | Each released version: `{version, tag, sha256}`. The manager downloads the newest and checks it against `sha256`. |
 
+## Becoming an official plugin
+
+Plugins by other authors can join the list. A plugin runs with the manager's permissions, so the
+list takes only plugins whose every listed version has been reviewed from its source, and that the
+maintainer can keep working on if their author stops. To propose one, open an issue in this
+repository with the plugin's repository and the version to review. Whether a plugin is listed is
+the maintainer's decision.
+
+### Licence
+
+The plugin's repository has a `LICENSE` file with one of these licences, all approved by the
+[Open Source Initiative](https://opensource.org/licenses):
+
+| Licence (SPDX) | Note |
+|---|---|
+| `MIT` | Preferred: the licence of the manager and of every plugin listed so far. |
+| `Apache-2.0` | Its `NOTICE` file, if there is one, stays in every copy. |
+| `BSD-2-Clause`, `BSD-3-Clause`, `ISC` | Equivalent to MIT for this list. |
+
+Other OSI-approved licences, such as `MPL-2.0` or the GPL family, are decided case by case: their
+code cannot move into the manager or into the MIT plugins. Not listed:
+
+- a repository with no licence: being public on GitHub gives no one the right to change or
+  redistribute it;
+- source-available licences that restrict changes or redistribution, such as the Business Source
+  License, the Commons Clause or the PolyForm licences;
+- Creative Commons licences used for code;
+- closed source.
+
+### Source and builds
+
+1. The complete source of each version is public in the plugin's repository under a tag, and
+   builds from a clean checkout with the repository's own build script.
+2. The plugin's README says what it reads and writes on the player's computer, and which hosts it
+   contacts.
+3. The maintainer reviews the source at that tag, builds the DLL from it, and publishes the DLL as
+   a release of a fork in the maintainer's account. `repository` names that fork; `author` names
+   the plugin's author. A DLL built anywhere else cannot be checked against the reviewed source,
+   so the listed file is always the maintainer's build.
+
+### New versions
+
+- The author tags the new version. The maintainer reviews the changes since the last listed
+  version, builds it and adds it to `versions`.
+- A version released under a licence not accepted above is not added. Versions already listed
+  keep the licence they were released under.
+- If the author stops maintaining the plugin, the maintainer may continue it in the fork, or
+  remove it from the list.
+
 ## Maintaining the list
 
-This section is for the maintainer of this repository, who is also the author of every plugin in
-it. No one else can add a plugin to the list or a version to a plugin: the manager reads the list
+This section is for the maintainer of this repository. No one else can add a plugin to the list or a version to a plugin: the manager reads the list
 only from this repository's `main`, and installs an official plugin only when its file matches a
 SHA-256 written here. Suggestions are welcome as issues or pull requests.
 
 To release a new version of an official plugin:
 
 1. Publish a release in the plugin's repository with the DLL attached under the name in `asset`.
+   For another author's plugin, that repository is the maintainer's fork, and the DLL is built
+   there from the reviewed tag.
 2. Add `{version, tag, sha256}` to the plugin's `versions` here: the release's tag, and the SHA-256
    of the attached file as GitHub serves it.
 3. Push to `main`. Every copy of the manager offers the new version from then on; the manager
@@ -103,8 +156,8 @@ the complete example in [example/](example).
 | Speed Dial for Liberty：一键呼叫战备。你按一个键，插件用你自己的战备输入键替你输入战备代码。需要同时启用 MOD Speed Dial for Liberty（v0.24.0 或更新），游戏时管理器保持运行 | `HD2QD.SpeedDial.dll` | [1.6.2](https://github.com/pat-pat-patrick/hd2qd-speed-dial/releases/tag/v1.6.2) | [hd2qd-speed-dial](https://github.com/pat-pat-patrick/hd2qd-speed-dial) |
 | HellForge：启动离线版《绝地潜兵2》HellForge，并把它作为管理器的部署目标：库里的 MOD 转换为 HellForge 的游戏版本、会话、档案编辑器、设置、联机大厅、日志和会员 MOD（部署库里的 MOD 需要管理器 0.20.0 或更新） | `HD2QD.HellForge.dll` | [0.15.0](https://github.com/pat-pat-patrick/hd2qd-hellforge/releases/tag/v0.15.0) | [hd2qd-hellforge](https://github.com/pat-pat-patrick/hd2qd-hellforge) |
 
-需要 HD2 Mod Quick Deploy 0.15.0 或更新版本（插件接口 Api 2）。默认均不安装。列表只收录管理器创作者
-本人的插件；其他插件仍可从文件添加。
+需要 HD2 Mod Quick Deploy 0.15.0 或更新版本（插件接口 Api 2）。默认均不安装。其他创作者的插件符合
+[成为官方插件](#成为官方插件)中的条件时，也可收入列表；任何插件仍可从文件添加。
 
 ## 添加插件
 
@@ -129,19 +182,60 @@ the complete example in [example/](example).
 | `author`、`repository` | 创作者，以及发布该插件的 GitHub 仓库。 |
 | `asset` | 要下载的 release 附件。 |
 | `api` | 插件使用的接口版本。 |
+| `license` | 插件的许可证，使用 SPDX 标识符（`MIT`、`Apache-2.0` 等）。供阅读列表的人参考，管理器不使用。 |
 | `wanted_by_file` | 可选：带有此文件的 MOD 会被标记为需要该插件。 |
 | `button` | 可选：为 `true` 时，该插件在管理器标题栏有自己的按钮，图标为插件自带的 `app.ico`。只有列在这里、且已安装文件与其某个 `versions` 一致的插件才能有按钮。 |
 | `versions` | 每个已发布的版本：`{version, tag, sha256}`。管理器下载其中最新的版本，并按 `sha256` 核对。 |
 
+## 成为官方插件
+
+其他创作者的插件可以加入列表。插件以管理器的权限运行，因此列表只收录这样的插件：列出的每个版本都经过
+源码审核，并且创作者停止维护后，维护者能够继续维护。如需申请，请在本仓库开一个 issue，写明插件的仓库
+和要审核的版本。是否收录由维护者决定。
+
+### 许可证
+
+插件仓库中须有 `LICENSE` 文件，使用以下许可证之一。它们均经过
+[开放源代码促进会（OSI）](https://opensource.org/licenses)认证：
+
+| 许可证（SPDX） | 说明 |
+|---|---|
+| `MIT` | 首选：管理器和目前所有列出插件使用的许可证。 |
+| `Apache-2.0` | 如有 `NOTICE` 文件，每份副本中须保留。 |
+| `BSD-2-Clause`、`BSD-3-Clause`、`ISC` | 对本列表而言与 MIT 等同。 |
+
+其他经 OSI 认证的许可证，如 `MPL-2.0` 或 GPL 系列，逐个决定：这些代码不能并入管理器或 MIT 插件。
+以下情况不予收录：
+
+- 仓库没有许可证：在 GitHub 上公开，并不授予任何人修改或再发布的权利；
+- 限制修改或再发布的“源码可见”许可证，如 Business Source License、Commons Clause 或 PolyForm 系列；
+- 用于代码的 Creative Commons 许可证；
+- 闭源。
+
+### 源码与构建
+
+1. 每个版本的完整源码在插件仓库中公开并打上标签，能从干净的检出用仓库自带的构建脚本构建。
+2. 插件的 README 写明它在玩家电脑上读写哪些内容、连接哪些主机。
+3. 维护者审核该标签的源码，由此构建 DLL，并作为维护者账号下一个 fork 的 release 发布。`repository`
+   填写这个 fork，`author` 填写插件的创作者。在其他地方构建的 DLL 无法与审核过的源码对应，因此列表中
+   的文件始终是维护者的构建。
+
+### 新版本
+
+- 创作者为新版本打标签。维护者审核自上一个已列出版本以来的改动，构建后加入 `versions`。
+- 以上述之外的许可证发布的版本不予加入。已列出的版本保留其发布时的许可证。
+- 创作者停止维护时，维护者可以在 fork 中继续维护，或将其从列表中移除。
+
 ## 维护列表
 
-本节供本仓库的维护者使用，维护者也是列表中所有插件的创作者。其他人无法向列表加入插件，也无法为插件
+本节供本仓库的维护者使用。其他人无法向列表加入插件，也无法为插件
 加入新版本：管理器只从本仓库的 `main` 读取列表，并且只有文件的 SHA-256 与这里记录的一致时，才会作为
 官方插件安装。欢迎通过 issue 或 pull request 提出建议。
 
 发布官方插件的新版本：
 
-1. 在插件自己的仓库发布 release，附件文件名与 `asset` 一致。
+1. 在插件自己的仓库发布 release，附件文件名与 `asset` 一致。其他创作者的插件，这个仓库是维护者的
+   fork，DLL 在那里从审核过的标签构建。
 2. 在本仓库该插件的 `versions` 中加入 `{version, tag, sha256}`：release 的标签，以及 GitHub 上该附件的
    SHA-256。
 3. 推送到 `main`。此后所有管理器都会提供新版本，管理器本身无需发布新版。

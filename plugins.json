@@ -9,6 +9,7 @@
       "repository": "pat-pat-patrick/hd2-mod-setting-gui",
       "asset": "HD2QD.Settings.dll",
       "api": 2,
+      "license": "MIT",
       "button": true,
       "versions": [
         {
@@ -36,6 +37,7 @@
       "repository": "pat-pat-patrick/hd2qd-asset-check",
       "asset": "HD2QD.AssetCheck.dll",
       "api": 2,
+      "license": "MIT",
       "versions": [
         {
           "version": "1.2.0",
@@ -72,6 +74,7 @@
       "repository": "pat-pat-patrick/hd2qd-repatch",
       "asset": "HD2QD.Repatch.dll",
       "api": 2,
+      "license": "MIT",
       "versions": [
         {
           "version": "1.1.0",
@@ -98,6 +101,7 @@
       "repository": "pat-pat-patrick/hd2-mod-license",
       "asset": "HD2QD.License.dll",
       "api": 2,
+      "license": "MIT",
       "wanted_by_file": "hd2_license.json",
       "versions": [
         {
@@ -160,6 +164,7 @@
       "repository": "pat-pat-patrick/hd2qd-resource-names",
       "asset": "HD2QD.ResourceNames.dll",
       "api": 2,
+      "license": "MIT",
       "versions": [
         {
           "version": "1.0.0",
@@ -186,6 +191,7 @@
       "repository": "pat-pat-patrick/hd2qd-speed-dial",
       "asset": "HD2QD.SpeedDial.dll",
       "api": 2,
+      "license": "MIT",
       "wanted_by_file": "HD2QD.SpeedDial.txt",
       "versions": [
         {
@@ -223,6 +229,7 @@
       "repository": "pat-pat-patrick/hd2qd-hellforge",
       "asset": "HD2QD.HellForge.dll",
       "api": 2,
+      "license": "MIT",
       "button": true,
       "versions": [
         {
