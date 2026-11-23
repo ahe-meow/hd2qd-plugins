@@ -153,6 +153,11 @@
           "version": "1.11.5",
           "tag": "plugin-v1.11.5",
           "sha256": "c35b4c710ac1ae45213205ac89507b4b3f808b2368bdaf37aa14ad5e3e4ffc1d"
+        },
+        {
+          "version": "1.13.0",
+          "tag": "plugin-v1.13.0",
+          "sha256": "7c6650644580c5de11b362bc750e8802342fd535b36d3e52b2cd7219a781fd9f"
         }
       ]
     },
