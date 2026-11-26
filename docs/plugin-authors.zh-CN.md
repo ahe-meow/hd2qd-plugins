@@ -27,7 +27,7 @@
 
 | 类型 | 成员 | 含义 |
 |---|---|---|
-| `"window"` | `void Open(Window owner, Dictionary<string, object> host)` | 卡片显示简介和“打开”按钮，点击时调用此方法。请用 `host["window"]` 创建窗口，使其使用管理器的窗口外框。 |
+| `"window"` | `void Open(Window owner, Dictionary<string, object> host)` | 卡片显示简介和“打开”按钮，点击时调用此方法。host 提供 `host["tab"]` 时，请用它将内容显示为标签页；否则用 `host["window"]` 创建窗口，使其使用管理器的窗口外框（见[标签页或窗口](#标签页或窗口)）。 |
 | `"panel"` | `FrameworkElement Panel(Window owner, Dictionary<string, object> host)` | 由插件绘制卡片正文。管理器在其上方绘制标题、文件名、版本和“移除”按钮。 |
 
 ### 可选成员
@@ -36,8 +36,8 @@
 |---|---|
 | `Dictionary<string, object> ModNote(string modFolder, Dictionary<string, object> host)` | 在 MOD 行上显示的标记，或 `null`：`text`、`tip`（使用 `host["lang"]` 的语言）和 `colour`（`"Yellow"`、`"Blue"` 或 `"Muted"`）。管理器每次读取状态时对每个 MOD 调用一次，须保持开销很小。 |
 | `List<Dictionary<string, object>> ModTags(string modFolder, Dictionary<string, object> host)` | MOD 所含内容的简短标签，与管理器自己的 `LUA` 标签样式相同（蓝色边框），并排显示：每项为 `{text, tip}`，使用 `host["lang"]` 的语言；没有则返回 `null`。用于目标游戏所区分的 MOD 种类（HellForge 插件：`C`、`DLL`、`数值`），不用于适用目标或状态。管理器每次读取状态时对每个 MOD 调用一次，须保持开销很小。 |
-| `app.ico` | 不是类成员：插件自己的图标，即名为 `app.ico` 的嵌入资源（或同名的 WPF `Resource`）。官方列表为某个官方插件设置按钮（`"button": true`）时，管理器用它绘制标题栏按钮；其他插件没有标题栏按钮。 |
-| `byte[] Icon(Dictionary<string, object> host)` | 可选：运行时读取的图标，即一个 `.ico` 的字节，或 `null`。返回图标时，标题栏按钮用它代替 `app.ico`；返回 `null` 时仍用 `app.ico`。用于插件不能随附的图标，例如另一个程序的图标，从玩家电脑上的该程序读取。每次绘制标题栏都会调用，读取结果应自行缓存。0.19.0 之后的 Quick Deploy 才会读取；更早的版本使用 `app.ico`。 |
+| `app.ico` | 不是类成员：插件自己的图标，即名为 `app.ico` 的嵌入资源（或同名的 WPF `Resource`）。官方列表为某个官方插件设置按钮（`"button": true`）时，管理器用它绘制标题栏按钮；其他插件没有标题栏按钮。Quick Deploy 0.25.0 起，所有插件的标签上也显示此图标。 |
+| `byte[] Icon(Dictionary<string, object> host)` | 可选：运行时读取的图标，即一个 `.ico` 的字节，或 `null`。返回图标时，标题栏按钮和标签用它代替 `app.ico`；返回 `null` 时仍用 `app.ico`。用于插件不能随附的图标，例如另一个程序的图标，从玩家电脑上的该程序读取。每次绘制标题栏都会调用，读取结果应自行缓存。0.19.0 之后的 Quick Deploy 才会读取；更早的版本使用 `app.ico`。 |
 | `static readonly string[][] Commands` | 添加到命令行的命令，每行为 `[名称, 说明]`。与管理器自身命令重名的会被忽略。 |
 | `int Run(string command, string[] args, TextWriter output, Dictionary<string, object> host)` | 运行 `Commands` 中的命令：`0` 完成，`1` 拒绝，`2` 命令行有误。抛出的异常按拒绝处理。 |
 | `bool Start(Dictionary<string, object> host)` | 窗口启动时在后台运行一次（续期、缓存等）。需要管理器重新读取状态时返回 `true`。 |
@@ -66,7 +66,8 @@
 
 | 键 | 类型 | 含义 |
 |---|---|---|
-| `window` | `Func<string, FrameworkElement, Window>` | 使用管理器外框的窗口，参数为标题和内容。 |
+| `tab` | `Func<string, FrameworkElement, Action, Dictionary<string, object>>` | 管理器窗口中的一个标签页，创建后立即显示：参数为标题、内容，以及标签关闭后管理器调用一次的回调。返回 `show` 和 `close`，均为 `Action`。Quick Deploy 0.25.0 起提供，之前没有此键。见[标签页或窗口](#标签页或窗口)。 |
+| `window` | `Func<string, FrameworkElement, Window>` | 使用管理器外框的窗口，参数为标题和内容。供没有 `tab` 的管理器使用。 |
 | `ask` | `Func<string, string, bool>` | 管理器的询问对话框：正文和操作按钮的文字；选择该操作时返回 `true`。 |
 | `tell` | `Action<string>` | 管理器的消息对话框。 |
 | `foot` | `Action<string, string>` | 在管理器状态栏显示一行：文字和颜色。 |
@@ -75,6 +76,40 @@
 管理器的应用程序资源中带有其样式和颜色，面板或窗口可通过 `Application.Current.TryFindResource`
 使用：样式 `Ghost`、`Primary`；画刷 `Ink`、`Muted`、`Yellow`、`Blue`、`Grid`、`Ground700`、
 `Ground900`。
+
+## 标签页或窗口
+
+自 Quick Deploy 0.25.0 起，窗口类插件以管理器窗口中的标签页打开，与浏览器相同：管理器本身是第一个
+标签，每个打开的插件各占一个标签。插件通过 `host["tab"]` 请求标签页。不使用它的插件照常工作：
+仍像以前一样用 `host["window"]`（或自建的窗口）打开独立窗口，不显示为标签。
+
+```csharp
+static Action showTab;   // 插件的标签页，打开期间有效
+
+public static void Open(Window owner, Dictionary<string, object> host)
+{
+    if (showTab != null) { showTab(); return; }       // 再次打开：切换到已有的标签
+    var lang = Words.Lang(host);
+    FrameworkElement content = MakeContent(host);      // 插件自己的界面内容
+    if (host.TryGetValue("tab", out var t) && t is Func<string, FrameworkElement, Action, Dictionary<string, object>> tab)
+    {
+        var handle = tab(Title(lang), content, () => showTab = null);
+        showTab = handle.TryGetValue("show", out var show) ? show as Action : null;
+        return;
+    }
+    // 0.25.0 之前的管理器：打开独立窗口
+    ((Func<string, FrameworkElement, Window>)host["window"])(Title(lang), content).Show();
+}
+```
+
+| 项目 | 说明 |
+|---|---|
+| 标签 | 标签上显示插件的标题和图标（`app.ico`；`Icon` 返回图标时用该图标）。标签页占据标签栏以下的整个窗口；显示插件标签时，管理器的标题栏和状态栏隐藏。 |
+| 关闭 | 点击标签上的 ×、用鼠标中键点击标签或按 Ctrl+W。随后管理器调用插件传入的回调一次：停止计时器、写入未保存的内容、释放文件和快捷键。程序在标签打开时退出，也会调用该回调。Esc 不会关闭标签。 |
+| 返回值 | `show` 切换到该标签；窗口在通知区域时一并显示。`close` 关闭该标签，与点击 × 相同。用同一个内容再次调用 `tab`，只会切换到已有的标签，不会新建。 |
+| 没有自己的窗口 | 标签页中的内容不属于插件的任何窗口：不要关闭或隐藏窗口。对话框的所有者请用 `Window.GetWindow(content)`。原本放在窗口中的内容，须先从窗口中移出（`window.Content = null`）。 |
+| 快捷键 | 显示插件标签时，Ctrl+W、Ctrl+Tab 和 Ctrl+Shift+Tab 由管理器处理。 |
+| 启动时打开 | 管理器的设置“启动时恢复上次的标签”打开时，程序关闭时标签仍打开的插件，会在下次启动时再次收到 `Open` 调用。因此 `Open` 不能依赖玩家的点击。 |
 
 ## 语言
 

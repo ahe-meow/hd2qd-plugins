@@ -29,7 +29,7 @@ anything of the plugin runs, so `Api` must be a `const`.
 
 | Kind | Member | Meaning |
 |---|---|---|
-| `"window"` | `void Open(Window owner, Dictionary<string, object> host)` | The card shows the summary and an **Open** button, which calls this. Make the window with `host["window"]` so it has the manager's frame. |
+| `"window"` | `void Open(Window owner, Dictionary<string, object> host)` | The card shows the summary and an **Open** button, which calls this. Show the content as a tab with `host["tab"]` when the host has it; otherwise make the window with `host["window"]` so it has the manager's frame (see [A tab or a window](#a-tab-or-a-window)). |
 | `"panel"` | `FrameworkElement Panel(Window owner, Dictionary<string, object> host)` | The plugin draws the card's body on the Plugins page. The manager draws the title, file, version and **Remove** above it. |
 
 ### Optional
@@ -38,8 +38,8 @@ anything of the plugin runs, so `Api` must be a `const`.
 |---|---|
 | `Dictionary<string, object> ModNote(string modFolder, Dictionary<string, object> host)` | A word on a mod's row, or `null`: `text`, `tip` (in `host["lang"]`) and `colour` (`"Yellow"`, `"Blue"` or `"Muted"`). Called for every mod whenever the manager reads its state, so it must be cheap. |
 | `List<Dictionary<string, object>> ModTags(string modFolder, Dictionary<string, object> host)` | What the mod holds, as short tags drawn like the manager's own `LUA` tag (a blue box), side by side: each `{text, tip}` in `host["lang"]`, or `null` for none. For the kinds of mod a target's game knows (the HellForge plugin: `C`, `DLL`, `STATS`); not for a mod's target or state. Called for every mod whenever the manager reads its state, so it must be cheap. |
-| `app.ico` | Not a member: the plugin's own icon, an embedded resource named `app.ico` (or a WPF `Resource` of that name). The manager draws it on the title-bar button that an official plugin gets when the official list gives it one (`"button": true`); no other plugin has a title-bar button. |
-| `byte[] Icon(Dictionary<string, object> host)` | Optional: an icon read at run time, the bytes of an `.ico`, or `null`. When it gives one, the title-bar button draws it instead of `app.ico`; `null` keeps `app.ico`. For an icon the plugin may not ship, such as another program's, read from that program on the player's computer. Called whenever the title bar is drawn, so keep what it reads. Read by Quick Deploy later than 0.19.0; earlier versions draw `app.ico`. |
+| `app.ico` | Not a member: the plugin's own icon, an embedded resource named `app.ico` (or a WPF `Resource` of that name). The manager draws it on the title-bar button that an official plugin gets when the official list gives it one (`"button": true`); no other plugin has a title-bar button. From Quick Deploy 0.25.0 it is also drawn on the plugin's tab, for every plugin. |
+| `byte[] Icon(Dictionary<string, object> host)` | Optional: an icon read at run time, the bytes of an `.ico`, or `null`. When it gives one, the title-bar button and the tab draw it instead of `app.ico`; `null` keeps `app.ico`. For an icon the plugin may not ship, such as another program's, read from that program on the player's computer. Called whenever the title bar is drawn, so keep what it reads. Read by Quick Deploy later than 0.19.0; earlier versions draw `app.ico`. |
 | `static readonly string[][] Commands` | Commands added to the command line, as rows of `[name, help]`. A name the manager has itself is left out. |
 | `int Run(string command, string[] args, TextWriter output, Dictionary<string, object> host)` | Runs one of `Commands`: `0` done, `1` refused, `2` a wrong command line. An exception is reported as a refusal. |
 | `bool Start(Dictionary<string, object> host)` | Runs once in the background when the window starts (a renewal, a cache). Return `true` when the manager should read its state again. |
@@ -68,7 +68,8 @@ In the window only:
 
 | Key | Type | Meaning |
 |---|---|---|
-| `window` | `Func<string, FrameworkElement, Window>` | A window with the manager's frame, for a title and content. |
+| `tab` | `Func<string, FrameworkElement, Action, Dictionary<string, object>>` | A tab of the manager's window, shown at once: a title, the content, and an action the manager calls once the tab is closed. Returns `show` and `close`, both `Action`. From Quick Deploy 0.25.0; absent before. See [A tab or a window](#a-tab-or-a-window). |
+| `window` | `Func<string, FrameworkElement, Window>` | A window with the manager's frame, for a title and content. For a manager without `tab`. |
 | `ask` | `Func<string, string, bool>` | The manager's question dialog: text and the action's label; `true` when chosen. |
 | `tell` | `Action<string>` | The manager's message dialog. |
 | `foot` | `Action<string, string>` | A line in the manager's status bar: text and colour. |
@@ -77,6 +78,41 @@ In the window only:
 The manager's application carries its styles and colours. A panel or window can use them with
 `Application.Current.TryFindResource`: the styles `Ghost` and `Primary`; the brushes `Ink`,
 `Muted`, `Yellow`, `Blue`, `Grid`, `Ground700`, `Ground900`.
+
+## A tab or a window
+
+From Quick Deploy 0.25.0 a window plugin opens as a tab of the manager's window, as in a browser:
+the manager is the first tab, and each open plugin is one more. A plugin asks for a tab with
+`host["tab"]`. A plugin that does not use it keeps working: it opens its window with
+`host["window"]` (or its own) as before, and has no tab.
+
+```csharp
+static Action showTab;   // the plugin's tab, while it is open
+
+public static void Open(Window owner, Dictionary<string, object> host)
+{
+    if (showTab != null) { showTab(); return; }       // opened again: its tab is shown
+    var lang = Words.Lang(host);
+    FrameworkElement content = MakeContent(host);      // the plugin's own content
+    if (host.TryGetValue("tab", out var t) && t is Func<string, FrameworkElement, Action, Dictionary<string, object>> tab)
+    {
+        var handle = tab(Title(lang), content, () => showTab = null);
+        showTab = handle.TryGetValue("show", out var show) ? show as Action : null;
+        return;
+    }
+    // a manager before 0.25.0: a window of its own
+    ((Func<string, FrameworkElement, Window>)host["window"])(Title(lang), content).Show();
+}
+```
+
+| What | How it works |
+|---|---|
+| The tab | Its head shows the plugin's title and icon (`app.ico`, or `Icon` when it gives one). The tab takes the whole window below the row of tabs; the manager's title bar and status bar are hidden while it is shown. |
+| Closing | The tab's ×, a middle click on it, or Ctrl+W. The manager then calls the plugin's action once: stop timers, write what is pending, release files and hotkeys. It also calls it when the program ends with the tab open. Esc does not close a tab. |
+| The handle | `show` brings the tab forward, and the window with it from the notification area. `close` closes the tab as × does. Calling `tab` again with the same content shows its tab and makes no second one. |
+| No window of its own | Content in a tab is not in a window of the plugin: do not close or hide one. For a dialog's owner, use `Window.GetWindow(content)`. Content that was a window's must be taken out of it first (`window.Content = null`). |
+| Keys | Ctrl+W, Ctrl+Tab and Ctrl+Shift+Tab belong to the manager while a plugin's tab is shown. |
+| Opened at start | With the manager's setting *Reopen the previous tabs at start*, the plugins whose tabs were open when the program was closed get `Open` again at its next start. `Open` must therefore work without a click from the player. |
 
 ## Languages
 

@@ -26,10 +26,16 @@ namespace Hd2Qd.Example
 
         public static string Summary(string lang) => Words.Get(lang, "summary");
 
-        /// <summary>Kind "window": the card's Open. host["window"](title, content) makes a window
-        /// with the manager's own frame; host["mods"]() gives the enabled mods in load order.</summary>
+        // the plugin's tab, while it is open: Open shows it again instead of making a second
+        static Action showTab;
+
+        /// <summary>Kind "window": the card's Open. host["tab"](title, content, closed) shows the
+        /// content as a tab of the manager's window (Quick Deploy 0.25.0 and later); a manager
+        /// without it gets a window with its own frame from host["window"](title, content).
+        /// host["mods"]() gives the enabled mods in load order.</summary>
         public static void Open(Window owner, Dictionary<string, object> host)
         {
+            if (showTab != null) { showTab(); return; }
             var lang = Words.Lang(host);
             var mods = ((Func<List<Dictionary<string, object>>>)host["mods"])();
             var list = new StackPanel { Margin = new Thickness(24) };
@@ -39,8 +45,16 @@ namespace Hd2Qd.Example
                     Text = m["name"] + "  ·  " + Words.F(lang, "archives", ((List<object>)m["archives"]).Count),
                     Margin = new Thickness(0, 4, 0, 4),
                 });
+            var content = new ScrollViewer { Content = list };
+            if (host.TryGetValue("tab", out var t) && t is Func<string, FrameworkElement, Action, Dictionary<string, object>> tab)
+            {
+                // closed: called once the tab is closed (its X, Ctrl+W, the program ending)
+                var handle = tab(Title(lang), content, () => showTab = null);
+                showTab = handle.TryGetValue("show", out var show) ? show as Action : null;
+                return;
+            }
             var make = (Func<string, FrameworkElement, Window>)host["window"];
-            make(Title(lang), new ScrollViewer { Content = list }).Show();
+            make(Title(lang), content).Show();
         }
 
         /// <summary>Optional: a word on a mod's row, or null, in host["lang"]; colour is "Yellow",
