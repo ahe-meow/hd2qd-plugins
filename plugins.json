@@ -31,6 +31,11 @@
           "version": "1.20.2",
           "tag": "v1.20.2",
           "sha256": "c100326da592e158994ac45f3a05b7f350f0f8a79001bf5ac917a98693d1cb4d"
+        },
+        {
+          "version": "1.21.0",
+          "tag": "v1.21.0",
+          "sha256": "4f39205e651cb587aa74e4b1e7bf3f298557e8beb3bc7d5a96b960b71ffe7608"
         }
       ]
     },
@@ -68,6 +73,11 @@
           "version": "1.4.2",
           "tag": "v1.4.2",
           "sha256": "1a1c267acc196674384c0d1fc27494cf8a1e2ec86bdb82caaa418072cb2b0e0d"
+        },
+        {
+          "version": "1.5.0",
+          "tag": "v1.5.0",
+          "sha256": "cc6593ee4e9d753e707af27f49f6b0c336d16ea68352a73c2763e7c6d048079a"
         }
       ]
     },
@@ -95,6 +105,11 @@
           "version": "1.2.1",
           "tag": "v1.2.1",
           "sha256": "ac7a2c1d688bd0eb85d42c9d00323572b3420ca34c5d13626d759fa04feb6af4"
+        },
+        {
+          "version": "1.3.0",
+          "tag": "v1.3.0",
+          "sha256": "063a205d5d185599bb179e7a0f40ab9b6416e2409c9211f9ee4fb69ce927c1a0"
         }
       ]
     },
@@ -291,6 +306,11 @@
           "version": "0.15.0",
           "tag": "v0.15.0",
           "sha256": "a7f744ca32076ee34bd2279b503cf7c7d75b0d23f44718edf3cf7d3a65190b4e"
+        },
+        {
+          "version": "0.16.0",
+          "tag": "v0.16.0",
+          "sha256": "f01528bd06bdf3cbcb2281b91320f0d4b2187e5be994e5bbcfdb5885491405a9"
         }
       ]
     }
