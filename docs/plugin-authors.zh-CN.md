@@ -44,6 +44,7 @@
 | `Dictionary<string, object> ModSource(string modFolder, Dictionary<string, object> host)` | 受保护的 MOD（其 `hd2_license.json` 中 `payload.deploy` 为 `"game"`）的文件从哪里部署：文件已就绪时返回 `{folder, mode}`，`folder` 的目录结构与该 MOD 自身的相同；未就绪时返回 `{folder: "", mode, why}`（`why` 使用 `host["lang"]` 的语言，显示在 MOD 行上；该 MOD 不参与部署）；不是本插件的 MOD 返回 `null`。管理器每次读取状态时对每个 MOD 调用一次，须保持开销很小。Quick Deploy 0.23.0 起。 |
 | `bool PrepareDeploy(Dictionary<string, object> host)` | 在部署前、以及管理器启动游戏前，准备好受保护 MOD 的文件（在后台线程调用，可以较慢）。`host["for_session"]` 为 `true` 时，`payload.mode` 为 `"session"` 的 MOD 也要准备。有 MOD 未能准备好时返回 `false`。Quick Deploy 0.23.0 起。 |
 | `void EndSession(Dictionary<string, object> host)` | 管理器启动的游戏已结束，管理器也已在不含会话模式 MOD 的情况下重新部署：删除这些 MOD 的文件。游戏运行期间不会调用。Quick Deploy 0.23.0 起。 |
+| `static string OverlayKey` | 仅限 window 类插件：在游戏中呼出其标签页（或窗口）的按键，按键名称与 HD2 Mod Setting GUI 相同，例如 `"page down"`、`"ctrl+shift+f10"`；可以设置按键但不提供默认键时为 `""`。可以是字段、常量或属性。见[在游戏中呼出](#在游戏中呼出)。Quick Deploy 0.26.0 起。 |
 
 ## host
 
@@ -111,6 +112,24 @@ public static void Open(Window owner, Dictionary<string, object> host)
 | 快捷键 | 显示插件标签时，Ctrl+W、Ctrl+Tab 和 Ctrl+Shift+Tab 由管理器处理。 |
 | 启动时打开 | 管理器的设置“启动时恢复上次的标签”打开时，程序关闭时标签仍打开的插件，会在下次启动时再次收到 `Open` 调用。因此 `Open` 不能依赖玩家的点击。 |
 
+## 在游戏中呼出
+
+Quick Deploy 0.26.0 起，window 类插件可以像 HD2 Mod Setting GUI 一样在游戏运行时呼出：插件声明
+`OverlayKey`，其余由管理器完成。
+
+```csharp
+public const string OverlayKey = "page down";   // "" ：玩家设置之前没有按键
+```
+
+| 项目 | 说明 |
+|---|---|
+| 按键 | 用 `RegisterHotKey` 注册，仅在 `helldivers2.exe` 运行时占用，其余时间留给其他程序。不向游戏进程注入任何内容。 |
+| 按下时 | 管理器调用 `Open`（与卡片上的按钮相同），再把标签页或插件自己的窗口放到游戏画面上方，置顶并接收键盘输入。再按一次收起，键盘输入交还游戏。游戏需使用无边框窗口模式。 |
+| 玩家设置 | 插件卡片上显示按键，玩家可在此更改或清除。插件提供的值只是默认值。 |
+| 两个插件同一按键 | 先注册的插件生效，后一个插件的卡片上会说明。按键被其他程序占用时，卡片上也会说明。 |
+| 不要 | 自行注册按键或安装键盘钩子：同一按键会被注册两次，反作弊软件也可能拦截钩子。 |
+| 按键名称 | 字母和数字（`"a"`、`"5"`）、`"f1"` 至 `"f24"`、`"numpad 0"` 至 `"numpad 9"`、`"page up"`、`"page down"`、`"home"`、`"end"`、`"insert"`、`"delete"`、方向键（`"up"` 等）、`"backtick"`、`"minus"`、`"equal"` 及其他标点的英文名称；修饰键 `ctrl+`、`alt+`、`shift+`。不支持鼠标按键。 |
+
 ## 语言
 
 管理器以语言标记（[BCP 47](https://www.rfc-editor.org/info/bcp47)）表示语言，例如 `en`、`zh-CN`、`de`、
@@ -131,6 +150,6 @@ public static void Open(Window owner, Dictionary<string, object> host)
 - 玩家看到的文字使用书面语。必须提供英文；其他每种语言各为一个文件。
 - 不得阻塞窗口：读取文件和访问网络请在后台线程进行。
 - 插件以管理器的权限运行。只读写插件需要的内容。
-- 希望插件进入官方列表（[`plugins.json`](../plugins.json)），见
-  [成为官方插件](../README.md#成为官方插件)：许可证符合要求、源码公开、由列表维护者构建。否则请在
-  你自己的仓库发布插件，玩家通过“添加插件…”安装。
+- 希望玩家在管理器的“浏览”标签页中找到你的插件，请将它登记到社区列表（[`community.json`](../community.json)）：
+  条件（GitHub 上公开源码、许可证符合要求、每个版本都是 release）和登记方法见
+  [社区插件](../README.md#社区插件)。任何插件也都可以通过“添加插件…”从文件添加。

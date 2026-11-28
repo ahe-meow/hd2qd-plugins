@@ -46,6 +46,7 @@ anything of the plugin runs, so `Api` must be a `const`.
 | `Dictionary<string, object> ModSource(string modFolder, Dictionary<string, object> host)` | For a protected mod (its `hd2_license.json` has `payload.deploy` `"game"`), where the manager deploys its files from: `{folder, mode}` when they are ready, `folder` laid out as the mod's own folder; `{folder: "", mode, why}` when they are not (`why` in `host["lang"]`, shown on the mod's row; the mod is left out of the deploy); `null` for a mod that is not the plugin's. Called once per mod whenever the manager reads its state, so it must be cheap. From Quick Deploy 0.23.0. |
 | `bool PrepareDeploy(Dictionary<string, object> host)` | Makes the protected mods' files ready, before a deploy and before the manager starts the game (on a background thread; it may take a while). `host["for_session"]` `true`: also the mods whose `payload.mode` is `"session"`. Return `false` when one could not be made ready. From Quick Deploy 0.23.0. |
 | `void EndSession(Dictionary<string, object> host)` | The game the manager started has ended and the manager has deployed without the session-mode mods: remove their files. Never called while the game runs. From Quick Deploy 0.23.0. |
+| `static string OverlayKey` | A window plugin only: the key that brings its tab (or window) up over the game, by the name HD2 Mod Setting GUI writes, such as `"page down"` or `"ctrl+shift+f10"`; `""` for a plugin that can have a key but brings none. A field, a constant or a property. See [A key in the game](#a-key-in-the-game). From Quick Deploy 0.26.0. |
 
 ## The host
 
@@ -114,6 +115,24 @@ public static void Open(Window owner, Dictionary<string, object> host)
 | Keys | Ctrl+W, Ctrl+Tab and Ctrl+Shift+Tab belong to the manager while a plugin's tab is shown. |
 | Opened at start | With the manager's setting *Reopen the previous tabs at start*, the plugins whose tabs were open when the program was closed get `Open` again at its next start. `Open` must therefore work without a click from the player. |
 
+## A key in the game
+
+From Quick Deploy 0.26.0 a window plugin can be brought up while the game runs, as HD2 Mod
+Setting GUI is: the plugin declares `OverlayKey`, and the manager does the rest.
+
+```csharp
+public const string OverlayKey = "page down";   // "" : none until the player chooses one
+```
+
+| What | How |
+|---|---|
+| The key | Held with `RegisterHotKey`, only while `helldivers2.exe` runs, so other programs have it the rest of the time. Nothing goes into the game's process. |
+| Pressed | The manager calls `Open` (as the card's button does), then puts the tab, or the plugin's own window, over the game, on top and with the keys. Pressed again, it is put away and the game gets the keys back. The game has to run in borderless windowed mode. |
+| The player's choice | The plugin's card shows the key; the player can change or clear it there. The plugin's value is only the default. |
+| Two plugins, one key | The first one keeps it; the card of the second says so. A key another program holds is said on the card too. |
+| Do not | Register the key yourself, or hook the keyboard: the manager would hold it twice, and anti-cheat software may refuse a hook. |
+| Key names | Letters and digits (`"a"`, `"5"`), `"f1"` to `"f24"`, `"numpad 0"` to `"numpad 9"`, `"page up"`, `"page down"`, `"home"`, `"end"`, `"insert"`, `"delete"`, the arrows (`"up"` …), `"backtick"`, `"minus"`, `"equal"` and the other punctuation by name; modifiers `ctrl+`, `alt+`, `shift+`. No mouse buttons. |
+
 ## Languages
 
 The manager names a language by its tag ([BCP 47](https://www.rfc-editor.org/info/bcp47)): `en`,
@@ -135,7 +154,8 @@ embedded resources and reads them with `Words` ([`example/Words.cs`](../example/
 - Write the text a player reads in a formal register. English is required; each other language is a file of its own.
 - Never block the window: read files and the network off the UI thread.
 - A plugin runs with the manager's permissions. Read and write only what the plugin needs.
-- To have your plugin in the official list ([`plugins.json`](../plugins.json)), see
-  [Becoming an official plugin](../README.md#becoming-an-official-plugin): an accepted licence,
-  public source, and a build made by the list's maintainer. Otherwise, publish your plugin in your own repository; players add it with
-  **Add plugin…**.
+- To have players find your plugin in the manager's Browse tab, list it in the community list
+  ([`community.json`](../community.json)): see
+  [Community plugins](../README.md#community-plugins) for the requirements (public source on
+  GitHub, an accepted licence, each version a release) and how to list it. Any plugin can also be
+  added from its file with **Add plugin…**.

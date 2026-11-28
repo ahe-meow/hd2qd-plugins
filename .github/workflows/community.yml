@@ -1,0 +1,34 @@
+name: Community list
+
+on:
+  pull_request:
+    paths: ["community.json", "locales/**", "tools/check_community.py", ".github/workflows/community.yml"]
+  push:
+    branches: [main]
+    paths: ["community.json", "locales/**", "tools/check_community.py"]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install dnfile==0.18.0
+      # the list on main (versions already listed must not change), and main's checker: a pull
+      # request that changes the checker is checked by the one on main, not its own
+      - name: Base list and checker
+        run: |
+          base="origin/${{ github.base_ref || 'main' }}"
+          git show "$base:community.json" > "$RUNNER_TEMP/base.json" 2>/dev/null || true
+          git show "$base:tools/check_community.py" > "$RUNNER_TEMP/check.py" 2>/dev/null || cp tools/check_community.py "$RUNNER_TEMP/check.py"
+      - name: Check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python "$RUNNER_TEMP/check.py" --root . --base "$RUNNER_TEMP/base.json"
