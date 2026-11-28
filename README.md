@@ -189,14 +189,14 @@ the complete example in [example/](example).
 
 ### 条件
 
-1. **公开源码。**插件仓库在 GitHub 上公开，且 GitHub 将其 `LICENSE` 文件识别为以下许可证之一（SPDX）：
+1. **公开源码**：插件仓库在 GitHub 上公开，且 GitHub 将其 `LICENSE` 文件识别为以下许可证之一（SPDX）：
    `MIT`、`Apache-2.0`、`BSD-2-Clause`、`BSD-3-Clause`、`ISC`、`0BSD`、`Unlicense`、`MPL-2.0`、
    `LGPL-2.1`、`LGPL-3.0`、`GPL-2.0`、`GPL-3.0`。其他许可证（包括 `AGPL-3.0`）和闭源插件不予登记。
-2. **在 GitHub 上发布。**每个版本都是该仓库的一个 release（不是草稿或预发布），附带 DLL，大小不超过
+2. **在 GitHub 上发布**：每个版本都是该仓库的一个 release（不是草稿或预发布），附带 DLL，大小不超过
    25 MB。管理器只从 GitHub 和本列表在 Cloudflare 上的镜像下载，不登记其他网站上的文件。
-3. **是本管理器的插件。**文件名为 `HD2QD.<名称>.dll`，且不与官方插件重名；包含公开类型 `Plugin` 和
+3. **是本管理器的插件**：文件名为 `HD2QD.<名称>.dll`，且不与官方插件重名；包含公开类型 `Plugin` 和
    `Api = 2`（[docs/plugin-authors.zh-CN.md](docs/plugin-authors.zh-CN.md)）。程序集版本即登记的版本。
-4. **简短的文字。**`title` 不超过 60 个字符，`summary` 不超过 400 个字符，使用英文。译文放在
+4. **简短的文字**：`title` 不超过 60 个字符，`summary` 不超过 400 个字符，使用英文。译文放在
    `locales/`（见下文），在同一个拉取请求中提交。
 
 ### 登记插件或新版本
